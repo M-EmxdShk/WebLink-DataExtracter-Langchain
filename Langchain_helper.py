@@ -1,6 +1,6 @@
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import UnstructuredURLLoader
-from langchain_text_splitters import CharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 loader = UnstructuredURLLoader(urls=[
     "https://www.thenationalnews.com/news/mena/2026/03/01/the-supersonic-boom-of-thaads-hit-to-kill-defences-more-100km-above-uae/"
@@ -16,8 +16,11 @@ Some have described it as the “canyoning effect” experienced by troops in mo
 
 print(text)
 
-splitter = CharacterTextSplitter(
-    separator="/n",
+r_splitter = RecursiveCharacterTextSplitter(
+    separators=["\n\n", "\n", "."],
     chunk_size=200
 )
-print(splitter.split_text(text))
+chunks = r_splitter.split_text(text)
+print(chunks)
+for chunk in chunks:
+    print(len(chunk))
