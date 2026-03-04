@@ -1,9 +1,13 @@
 import silence
 import pandas as pd
+from dotenv import load_dotenv
+import faiss
 from sentence_transformers import SentenceTransformer
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+load_dotenv()
 
 loader = UnstructuredURLLoader(urls=[
     "https://www.thenationalnews.com/news/mena/2026/03/01/the-supersonic-boom-of-thaads-hit-to-kill-defences-more-100km-above-uae/"
@@ -26,3 +30,10 @@ chunks = r_splitter.split_text(text)
 #for chunk in chunks:
     #print(len(chunk))
 
+# Setting up Vectors/Embeddings
+df = pd.read_csv("sample_text.csv")
+encoder = SentenceTransformer("all-MiniLM-L6-v2")
+vectors = encoder.encode(df.text)
+dimensions = vectors.shape[1]
+print(vectors.shape)
+print(dimensions)
