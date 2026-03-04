@@ -1,5 +1,6 @@
 import silence
 import pandas as pd
+import numpy as np
 from dotenv import load_dotenv
 import faiss
 from sentence_transformers import SentenceTransformer
@@ -33,7 +34,21 @@ chunks = r_splitter.split_text(text)
 # Setting up Vectors/Embeddings
 df = pd.read_csv("sample_text.csv")
 encoder = SentenceTransformer("all-MiniLM-L6-v2")
-vectors = encoder.encode(df.text)
+vectors = encoder.encode(df.text) # Encodes (Basically translate)
 dimensions = vectors.shape[1]
 print(vectors.shape)
 print(dimensions)
+
+
+# FAISS & Index
+index = faiss.IndexFlatL2(dimensions) # Storing Dimensions in a FAISS-made Index
+index.add(vectors)
+
+# Example
+search_query="Which country to travel to"
+
+vec = encoder.encode(search_query)
+svec = np.array(vec).reshape(1,-1) # Making the array 2D
+distance, I = index.search(svec, k=2) # Number of similar vectors you want to show.
+print(I) # Prints Position
+print(df.loc[6]) # Prints the row in the CSV file
